@@ -9,4 +9,6 @@ public interface WeatherRepository {
     List<WeatherSample> getSamples(LocalDate startDate, LocalDate endDate);
 
     void createWeatherSampleTable();
+
+    Boolean addSample(WeatherSample weatherSample);
 }

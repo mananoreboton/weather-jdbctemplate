@@ -4,9 +4,12 @@ import com.borabora.example.model.WeatherSample;
 import com.borabora.example.model.mapper.RowToWeatherSampleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 
 @Repository
@@ -17,9 +20,12 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
     private static final String WEATHER_SAMPLE_TABLE = "WEATHER_SAMPLE";
     private static final String SELECT_WEATHER_SAMPLE_QUERY = "SELECT " + SAMPLE_TIMESTAMP_COLUMN + ", " +
             TEMPERATURE_COLUMN + ", " +
-            LIGHT_COLUMN + ", " +
-            "FROM " + WEATHER_SAMPLE_TABLE + ";";
-    private static final String CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY = "CREATE TABLE " + WEATHER_SAMPLE_TABLE + " " +
+            LIGHT_COLUMN +
+            " FROM " + WEATHER_SAMPLE_TABLE + ";";
+    private static final String INSERT_WEATHER_SAMPLE_QUERY = "INSERT INTO " + WEATHER_SAMPLE_TABLE +
+            " (" + SAMPLE_TIMESTAMP_COLUMN + ", " + TEMPERATURE_COLUMN + ", " + LIGHT_COLUMN +")" +
+            "VALUES (?,?,?); ";
+    private static final String CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY = "CREATE TABLE " + WEATHER_SAMPLE_TABLE + " (" +
             SAMPLE_TIMESTAMP_COLUMN + " TIMESTAMP WITH TIME ZONE,\n" +
             TEMPERATURE_COLUMN + " NUMERIC(8, 5),\n" +
             LIGHT_COLUMN + " NUMERIC(7,2)\n" +
@@ -40,5 +46,15 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
     @Override
     public void createWeatherSampleTable() {
         jdbcTemplate.execute(CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY);
+    }
+
+    @Override
+    public Boolean addSample(WeatherSample weatherSample) {
+        return jdbcTemplate.execute(INSERT_WEATHER_SAMPLE_QUERY, (PreparedStatementCallback<Boolean>) ps -> {
+            ps.setTimestamp(1, new Timestamp(weatherSample.getSampleTimestamp()), Calendar.getInstance());
+            ps.setFloat(2, weatherSample.getTemperature());
+            ps.setFloat(3, weatherSample.getLight());
+            return ps.execute();
+        });
     }
 }

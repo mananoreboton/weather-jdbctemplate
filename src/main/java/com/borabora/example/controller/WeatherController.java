@@ -38,6 +38,6 @@ public class WeatherController implements WeatherApi {
     @PostMapping(path = "/add", consumes = "application/json")
     @Override
     public boolean addSample(@RequestBody WeatherSample weatherSample) {
-        return false;
+        return weatherRepository.addSample(weatherSample);
     }
 }

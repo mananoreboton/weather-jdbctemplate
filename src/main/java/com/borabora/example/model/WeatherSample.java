@@ -5,6 +5,9 @@ public class WeatherSample {
     private Float temperature;
     private Float light;
 
+    public WeatherSample() {
+    }
+
     public WeatherSample(Long sampleTimestamp, Float temperature, Float light) {
         this.sampleTimestamp = sampleTimestamp;
         this.temperature = temperature;
