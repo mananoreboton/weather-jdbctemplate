@@ -10,7 +10,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class WeatherRepositoryJDBC  implements WeatherRepository{
+public class WeatherRepositoryJDBC implements WeatherRepository {
+    private static final String SAMPLE_TIMESTAMP_COLUMN = "SAMPLE_TIMESTAMP";
+    private static final String TEMPERATURE_COLUMN =   "TEMPERATURE";
+    private static final String LIGHT_COLUMN ="LIGHT";
+    private static final String WEATHER_SAMPLE_TABLE = "WEATHER_SAMPLE";
+    private static final String SELECT_WEATHER_SAMPLE_QUERY = "SELECT " + SAMPLE_TIMESTAMP_COLUMN + ", " +
+            TEMPERATURE_COLUMN + ", " +
+            LIGHT_COLUMN + ", " +
+            "FROM " + WEATHER_SAMPLE_TABLE + ";";
+    private static final String CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY = "CREATE TABLE " + WEATHER_SAMPLE_TABLE + " " +
+            SAMPLE_TIMESTAMP_COLUMN + " TIMESTAMP WITH TIME ZONE,\n" +
+            TEMPERATURE_COLUMN + " NUMERIC(8, 5),\n" +
+            LIGHT_COLUMN + " NUMERIC(7,2)\n" +
+            ");";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -21,6 +34,11 @@ public class WeatherRepositoryJDBC  implements WeatherRepository{
 
     @Override
     public List<WeatherSample> getSamples(LocalDate startDate, LocalDate endDate) {
-        return jdbcTemplate.query("SELECT SAMPLE_TIMESTAMP, TEMPERATURE, LIGHT FROM WEATHER_SAMPLE", RowToWeatherSampleMapper::mapRow);
+        return jdbcTemplate.query( SELECT_WEATHER_SAMPLE_QUERY, RowToWeatherSampleMapper::mapRow);
+    }
+
+    @Override
+    public void createWeatherSampleTable() {
+        jdbcTemplate.execute(CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY);
     }
 }
