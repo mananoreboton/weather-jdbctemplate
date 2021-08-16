@@ -2,6 +2,7 @@ package com.borabora.example.controller;
 
 import com.borabora.example.api.WeatherApi;
 import com.borabora.example.model.WeatherInfo;
+import com.borabora.example.model.WeatherSample;
 import com.borabora.example.model.mapper.WeatherSampleToWeatherInfoMapper;
 import com.borabora.example.repository.WeatherRepository;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("weather")
 public class WeatherController implements WeatherApi {
 
     private final WeatherRepository weatherRepository;
@@ -23,7 +25,7 @@ public class WeatherController implements WeatherApi {
     }
 
 
-    @GetMapping(path = "/hi")
+    @GetMapping(path = "" , produces = "application/json")
     @Override
     public List<WeatherInfo> getSamples(
             @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate startDate,
@@ -33,5 +35,9 @@ public class WeatherController implements WeatherApi {
                 .collect(Collectors.toList());
     }
 
-
+    @PostMapping(path = "/add", consumes = "application/json")
+    @Override
+    public boolean addSample(@RequestBody WeatherSample weatherSample) {
+        return false;
+    }
 }
