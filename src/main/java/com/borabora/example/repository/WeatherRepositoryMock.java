@@ -15,4 +15,9 @@ public class WeatherRepositoryMock implements WeatherRepository{
     public List<WeatherSample> getSamples(LocalDate startDate, LocalDate endDate) {
         return Collections.singletonList(new WeatherSample(System.currentTimeMillis(), 22.2F, 90.1F));
     }
+
+    @Override
+    public boolean addSample(WeatherSample weatherSample) {
+        return false;
+    }
 }
