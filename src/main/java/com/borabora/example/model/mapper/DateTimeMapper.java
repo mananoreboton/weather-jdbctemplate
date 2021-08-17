@@ -1,4 +1,4 @@
-package com.borabora.example.util;
+package com.borabora.example.model.mapper;
 
 import org.springframework.stereotype.Component;
 

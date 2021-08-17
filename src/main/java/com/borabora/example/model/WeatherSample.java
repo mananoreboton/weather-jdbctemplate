@@ -1,6 +1,9 @@
 package com.borabora.example.model;
 
+import java.util.UUID;
+
 public class WeatherSample {
+    private UUID device;
     private Long sampleTimestamp;
     private Float temperature;
     private Float light;
@@ -8,7 +11,8 @@ public class WeatherSample {
     public WeatherSample() {
     }
 
-    public WeatherSample(Long sampleTimestamp, Float temperature, Float light) {
+    public WeatherSample(UUID device, Long sampleTimestamp, Float temperature, Float light) {
+        this.device = device;
         this.sampleTimestamp = sampleTimestamp;
         this.temperature = temperature;
         this.light = light;
@@ -24,5 +28,9 @@ public class WeatherSample {
 
     public Float getLight() {
         return light;
+    }
+
+    public UUID getDevice() {
+        return device;
     }
 }

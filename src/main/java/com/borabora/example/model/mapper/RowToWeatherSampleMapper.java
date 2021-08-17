@@ -8,9 +8,10 @@ import java.sql.SQLException;
 public class RowToWeatherSampleMapper {
     public static WeatherSample mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new WeatherSample(
-                rs.getTimestamp(1).getTime(),
-                rs.getFloat(2),
-                rs.getFloat(3)
+                new BytesToUuidMapper().map(rs.getBytes(1)),
+                rs.getTimestamp(2).getTime(),
+                rs.getFloat(3),
+                rs.getFloat(4)
         );
     }
 }

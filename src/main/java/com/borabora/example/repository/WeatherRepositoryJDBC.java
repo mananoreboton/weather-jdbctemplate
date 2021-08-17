@@ -2,6 +2,7 @@ package com.borabora.example.repository;
 
 import com.borabora.example.model.WeatherSample;
 import com.borabora.example.model.mapper.RowToWeatherSampleMapper;
+import com.borabora.example.model.mapper.UuidToBytesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
@@ -14,24 +15,27 @@ import java.util.List;
 
 @Repository
 public class WeatherRepositoryJDBC implements WeatherRepository {
+    private static final String DEVICE_COLUMN = "DEVICE";
     private static final String SAMPLE_TIMESTAMP_COLUMN = "SAMPLE_TIMESTAMP";
     private static final String TEMPERATURE_COLUMN =   "TEMPERATURE";
     private static final String LIGHT_COLUMN ="LIGHT";
     private static final String WEATHER_SAMPLE_TABLE = "WEATHER_SAMPLE";
-    private static final String SELECT_WEATHER_SAMPLE_QUERY = "SELECT " + SAMPLE_TIMESTAMP_COLUMN + ", " +
+    private static final String SELECT_WEATHER_SAMPLE_QUERY = "SELECT " + DEVICE_COLUMN + ", " +
+            SAMPLE_TIMESTAMP_COLUMN + ", " +
             TEMPERATURE_COLUMN + ", " +
             LIGHT_COLUMN +
             " FROM " + WEATHER_SAMPLE_TABLE + ";";
     private static final String INSERT_WEATHER_SAMPLE_QUERY = "INSERT INTO " + WEATHER_SAMPLE_TABLE +
-            " (" + SAMPLE_TIMESTAMP_COLUMN + ", " + TEMPERATURE_COLUMN + ", " + LIGHT_COLUMN +")" +
-            "VALUES (?,?,?); ";
+            " (" + DEVICE_COLUMN + ", " + SAMPLE_TIMESTAMP_COLUMN + ", " + TEMPERATURE_COLUMN + ", " + LIGHT_COLUMN +")" +
+            "VALUES (?,?,?,?); ";
     private static final String CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY = "CREATE TABLE " + WEATHER_SAMPLE_TABLE + " (" +
+            DEVICE_COLUMN + " BINARY(16),\n" +
             SAMPLE_TIMESTAMP_COLUMN + " TIMESTAMP WITH TIME ZONE,\n" +
             TEMPERATURE_COLUMN + " NUMERIC(8, 5),\n" +
             LIGHT_COLUMN + " NUMERIC(7,2)\n" +
             ");";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public WeatherRepositoryJDBC(JdbcTemplate jdbcTemplate) {
@@ -51,9 +55,10 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
     @Override
     public Boolean addSample(WeatherSample weatherSample) {
         return jdbcTemplate.execute(INSERT_WEATHER_SAMPLE_QUERY, (PreparedStatementCallback<Boolean>) ps -> {
-            ps.setTimestamp(1, new Timestamp(weatherSample.getSampleTimestamp()), Calendar.getInstance());
-            ps.setFloat(2, weatherSample.getTemperature());
-            ps.setFloat(3, weatherSample.getLight());
+            ps.setBytes(1, new UuidToBytesMapper().map(weatherSample.getDevice()));
+            ps.setTimestamp(2, new Timestamp(weatherSample.getSampleTimestamp()), Calendar.getInstance());
+            ps.setFloat(3, weatherSample.getTemperature());
+            ps.setFloat(4, weatherSample.getLight());
             return ps.execute();
         });
     }

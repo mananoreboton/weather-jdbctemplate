@@ -2,7 +2,6 @@ package com.borabora.example.model.mapper;
 
 import com.borabora.example.model.WeatherInfo;
 import com.borabora.example.model.WeatherSample;
-import com.borabora.example.util.DateTimeMapper;
 import org.springframework.stereotype.Component;
 
 @Component
