@@ -42,6 +42,11 @@
 			<artifactId>springdoc-openapi-webmvc-core</artifactId>
 			<version>1.5.10</version>
 		</dependency>
+		<dependency>
+			<groupId>us.dustinj.timezonemap</groupId>
+			<artifactId>timezonemap</artifactId>
+			<version>4.5</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

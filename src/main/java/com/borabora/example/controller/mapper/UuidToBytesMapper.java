@@ -1,4 +1,4 @@
-package com.borabora.example.model.mapper;
+package com.borabora.example.controller.mapper;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;

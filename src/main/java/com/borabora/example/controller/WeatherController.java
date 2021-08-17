@@ -1,12 +1,13 @@
 package com.borabora.example.controller;
 
 import com.borabora.example.api.WeatherApi;
-import com.borabora.example.model.WeatherInfo;
-import com.borabora.example.model.WeatherSample;
-import com.borabora.example.model.mapper.WeatherSampleToWeatherInfoMapper;
+import com.borabora.example.api.payload.weather.DeviceWeatherSample;
+import com.borabora.example.api.payload.weather.WeatherInfo;
+import com.borabora.example.controller.mapper.DeviceWeatherSampleToPersistenceSampleMapper;
+import com.borabora.example.controller.mapper.PersistenceWeatherSampleToWeatherInfoMapper;
 import com.borabora.example.repository.WeatherRepository;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,23 +17,28 @@ import java.util.stream.Collectors;
 public class WeatherController implements WeatherApi {
 
     private final WeatherRepository weatherRepository;
-    private final WeatherSampleToWeatherInfoMapper weatherSampleToWeatherInfoMapper;
+    private final PersistenceWeatherSampleToWeatherInfoMapper persistenceWeatherSampleToWeatherInfoMapper;
+    private final DeviceWeatherSampleToPersistenceSampleMapper deviceWeatherSampleToPersistenceSampleMapper;
 
-    public WeatherController(WeatherRepository weatherRepository, WeatherSampleToWeatherInfoMapper weatherSampleToWeatherInfoMapper) {
+    @Autowired
+    public WeatherController(
+            WeatherRepository weatherRepository,
+            PersistenceWeatherSampleToWeatherInfoMapper persistenceWeatherSampleToWeatherInfoMapper,
+            DeviceWeatherSampleToPersistenceSampleMapper deviceWeatherSampleToPersistenceSampleMapper) {
         this.weatherRepository = weatherRepository;
-        this.weatherSampleToWeatherInfoMapper = weatherSampleToWeatherInfoMapper;
+        this.persistenceWeatherSampleToWeatherInfoMapper = persistenceWeatherSampleToWeatherInfoMapper;
+        this.deviceWeatherSampleToPersistenceSampleMapper = deviceWeatherSampleToPersistenceSampleMapper;
     }
 
-
     @Override
-    public List<WeatherInfo> getSamples(LocalDate startDate, LocalDate endDate) {
+    public List<WeatherInfo> getWeatherInfo(LocalDate startDate, LocalDate endDate) {
         return weatherRepository.getSamples(startDate, endDate).stream()
-                .map(weatherSampleToWeatherInfoMapper::map)
+                .map(persistenceWeatherSampleToWeatherInfoMapper::map)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public boolean addSample(WeatherSample weatherSample) {
-        return weatherRepository.addSample(weatherSample);
+    public boolean addSample(DeviceWeatherSample deviceWeatherSample) {
+        return weatherRepository.addSample(deviceWeatherSampleToPersistenceSampleMapper.map(deviceWeatherSample));
     }
 }

@@ -1,14 +1,14 @@
 package com.borabora.example.repository;
 
-import com.borabora.example.model.WeatherSample;
+import com.borabora.example.repository.model.weather.PersistenceWeatherSample;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface WeatherRepository {
-    List<WeatherSample> getSamples(LocalDate startDate, LocalDate endDate);
+    List<PersistenceWeatherSample> getSamples(LocalDate startDate, LocalDate endDate);
 
     void createWeatherSampleTable();
 
-    Boolean addSample(WeatherSample weatherSample);
+    Boolean addSample(PersistenceWeatherSample deviceWeatherSample);
 }
