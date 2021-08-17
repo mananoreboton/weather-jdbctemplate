@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("weather")
 public class WeatherController implements WeatherApi {
 
     private final WeatherRepository weatherRepository;
@@ -25,19 +24,15 @@ public class WeatherController implements WeatherApi {
     }
 
 
-    @GetMapping(path = "" , produces = "application/json")
     @Override
-    public List<WeatherInfo> getSamples(
-            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate startDate,
-            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate endDate) {
+    public List<WeatherInfo> getSamples(LocalDate startDate, LocalDate endDate) {
         return weatherRepository.getSamples(startDate, endDate).stream()
                 .map(weatherSampleToWeatherInfoMapper::map)
                 .collect(Collectors.toList());
     }
 
-    @PostMapping(path = "/add", consumes = "application/json")
     @Override
-    public boolean addSample(@RequestBody WeatherSample weatherSample) {
-        return false;
+    public boolean addSample(WeatherSample weatherSample) {
+        return weatherRepository.addSample(weatherSample);
     }
 }

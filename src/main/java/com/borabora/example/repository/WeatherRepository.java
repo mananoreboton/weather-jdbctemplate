@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface WeatherRepository {
     List<WeatherSample> getSamples(LocalDate startDate, LocalDate endDate);
+
+    boolean addSample(WeatherSample weatherSample);
 }
