@@ -1,1 +1,11 @@
 GET http://localhost:8080/hi?start=2000-10-31&end=2000-10-31
+
+POST http://localhost:8080/weather/add
+accept: */*
+Content-Type: application/json
+{
+  "device": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "sampleTimestamp": 1629207666,
+  "temperature": 23.4,
+  "light": 1233
+}
