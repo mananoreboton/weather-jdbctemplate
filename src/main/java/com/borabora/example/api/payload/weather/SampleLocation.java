@@ -2,8 +2,11 @@ package com.borabora.example.api.payload.weather;
 
 public class SampleLocation {
 
-    private final float latitude;
-    private final float longitude;
+    private float latitude;
+    private float longitude;
+
+    public SampleLocation() {
+    }
 
     public SampleLocation(float latitude, float longitude) {
         this.latitude = latitude;

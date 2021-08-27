@@ -1,13 +1,13 @@
 package com.borabora.example.repository;
 
-import com.borabora.example.repository.model.weather.PersistenceWeatherSample;
 import com.borabora.example.repository.model.mapper.RowToPersistenceWeatherSampleMapper;
+import com.borabora.example.repository.model.weather.PersistenceWeatherSample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -26,9 +26,19 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
             LATITUDE_COLUMN + ", " +
             LONGITUDE_COLUMN +
             " FROM " + WEATHER_SAMPLE_TABLE + ";";
+    private static final String SELECT_WEATHER_SAMPLE_QUERY_WITH_WHERE = "SELECT " + DEVICE_COLUMN + ", " +
+            SAMPLE_TIMESTAMP_COLUMN + ", " +
+            TEMPERATURE_COLUMN + ", " +
+            LIGHT_COLUMN + ", " +
+            LATITUDE_COLUMN + ", " +
+            LONGITUDE_COLUMN +
+            " FROM " + WEATHER_SAMPLE_TABLE +
+            " WHERE " + LONGITUDE_COLUMN + " > (?) AND " + LONGITUDE_COLUMN + " < (?) AND " +
+            LATITUDE_COLUMN + " > (?) AND " + LATITUDE_COLUMN + " < (?) AND " +
+            SAMPLE_TIMESTAMP_COLUMN + " > (?) AND " + SAMPLE_TIMESTAMP_COLUMN + " < (?);";
     private static final String INSERT_WEATHER_SAMPLE_QUERY = "INSERT INTO " + WEATHER_SAMPLE_TABLE +
-            " (" + DEVICE_COLUMN + ", " + SAMPLE_TIMESTAMP_COLUMN + ", " + TEMPERATURE_COLUMN + ", " + LIGHT_COLUMN +
-            LATITUDE_COLUMN + ", " + LONGITUDE_COLUMN + ")" +
+            " (" + DEVICE_COLUMN + ", " + SAMPLE_TIMESTAMP_COLUMN + ", " + TEMPERATURE_COLUMN + ", " +
+            LIGHT_COLUMN + ", " + LATITUDE_COLUMN + ", " + LONGITUDE_COLUMN + ")" +
             "VALUES (?,?,?,?,?,?); ";
     private static final String CREATE_WEATHER_SAMPLE_TABLE_SQL_QUERY = "CREATE TABLE " + WEATHER_SAMPLE_TABLE + " (" +
             DEVICE_COLUMN + " BINARY(16),\n" +
@@ -47,8 +57,16 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
     }
 
     @Override
-    public List<PersistenceWeatherSample> getSamples(LocalDate startDate, LocalDate endDate) {
-        return jdbcTemplate.query(SELECT_WEATHER_SAMPLE_QUERY, RowToPersistenceWeatherSampleMapper::mapRow);
+    public List<PersistenceWeatherSample> getSamples(Long startDateTime, Long endDateTime, float latitude, float longitude) {
+        Object[] params = new Object[]{
+                (float) (longitude - (longitude * 0.01)),
+                (float) (longitude + (longitude * 0.01)),
+                (float) (latitude - (latitude * 0.01)),
+                (float) (latitude + (latitude * 0.01)),
+                new Timestamp(startDateTime),
+                new Timestamp(endDateTime)
+        };
+        return jdbcTemplate.query(SELECT_WEATHER_SAMPLE_QUERY_WITH_WHERE, RowToPersistenceWeatherSampleMapper::mapRow, params);
     }
 
     @Override
@@ -67,5 +85,10 @@ public class WeatherRepositoryJDBC implements WeatherRepository {
             ps.setFloat(6, persistenceWeatherSample.getLongitude());
             return ps.execute();
         });
+    }
+
+    @Override
+    public List<PersistenceWeatherSample> getSamples() {
+        return jdbcTemplate.query(SELECT_WEATHER_SAMPLE_QUERY, RowToPersistenceWeatherSampleMapper::mapRow);
     }
 }

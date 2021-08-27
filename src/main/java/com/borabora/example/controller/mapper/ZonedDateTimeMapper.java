@@ -10,12 +10,12 @@ import java.time.*;
 import java.util.Optional;
 
 @Component
-public class DateTimeMapper {
+public class ZonedDateTimeMapper {
 
     private final TimeZoneMap timeZoneMap;
 
     @Autowired
-    public DateTimeMapper(TimeZoneMap timeZoneMap) {
+    public ZonedDateTimeMapper(TimeZoneMap timeZoneMap) {
         this.timeZoneMap = timeZoneMap;
     }
 
@@ -34,5 +34,15 @@ public class DateTimeMapper {
                 .map(java.util.TimeZone::toZoneId)
                 .map(timestamp.toInstant()::atZone)
                 .orElse(timestamp.toLocalDateTime().atZone(ZoneId.systemDefault()));
+    }
+
+    public Long calculateEpocMillis(SampleLocation sampleLocation, LocalDateTime localDateTime) {
+        return Optional.ofNullable(timeZoneMap.getOverlappingTimeZone(sampleLocation.getLatitude(), sampleLocation.getLongitude()))
+                .map(us.dustinj.timezonemap.TimeZone::getZoneId)
+                .map(java.util.TimeZone::getTimeZone)
+                .map(java.util.TimeZone::toZoneId)
+                .map(localDateTime::atZone)
+                .map(x -> x.toInstant().toEpochMilli())
+                .orElse(Instant.now().toEpochMilli());
     }
 }

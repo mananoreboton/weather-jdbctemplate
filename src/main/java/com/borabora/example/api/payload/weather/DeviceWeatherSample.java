@@ -3,10 +3,13 @@ package com.borabora.example.api.payload.weather;
 import java.util.UUID;
 
 public class DeviceWeatherSample {
-    private final UUID device;
-    private final SampleLocation sampleLocation;
-    private final Float temperature;
-    private final Float light;
+    private UUID device;
+    private SampleLocation sampleLocation;
+    private Float temperature;
+    private Float light;
+
+    public DeviceWeatherSample() {
+    }
 
     public DeviceWeatherSample(UUID device, SampleLocation sampleLocation, Float temperature, Float light) {
         this.device = device;
