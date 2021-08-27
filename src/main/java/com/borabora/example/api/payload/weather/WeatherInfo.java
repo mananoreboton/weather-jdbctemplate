@@ -1,6 +1,7 @@
 package com.borabora.example.api.payload.weather;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class WeatherInfo {
 
